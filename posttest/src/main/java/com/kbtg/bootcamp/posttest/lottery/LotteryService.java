@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
+import com.kbtg.bootcamp.posttest.exception.PriceConflictException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,6 +18,10 @@ public class LotteryService {
         Lottery lottery;
         if (optionalLottery.isPresent()) {
             lottery = optionalLottery.get();
+            if (lottery.getPrice() != requestDto.getPrice()) {
+                throw new PriceConflictException("Conflicted prices. Lottery with ticket id: " + lottery.getTicket()
+                        + " costs " + lottery.getPrice());
+            }
             lottery.setAmount(lottery.getAmount() + requestDto.getAmount());
         } else {
             lottery = new Lottery();
