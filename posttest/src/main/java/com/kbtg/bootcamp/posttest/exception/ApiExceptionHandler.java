@@ -17,4 +17,12 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({ LotteryNotFoundException.class })
+    public ResponseEntity<Object> handleLotteryNotFoundException(LotteryNotFoundException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), HttpStatus.NOT_FOUND, ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
