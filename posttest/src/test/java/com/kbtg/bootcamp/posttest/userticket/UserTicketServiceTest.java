@@ -1,6 +1,8 @@
 package com.kbtg.bootcamp.posttest.userticket;
 
+import com.kbtg.bootcamp.posttest.exception.UserTicketNotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
+import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
 import com.kbtg.bootcamp.posttest.lottery.LotteryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserTicketServiceTest {
@@ -51,7 +52,7 @@ class UserTicketServiceTest {
     }
 
     @Test
-    @DisplayName("list user lotteries and show count and cost")
+    @DisplayName("list user lotteries and get count and cost")
     void listUserLotteries() {
         String userId = "1234567890";
 
@@ -79,5 +80,30 @@ class UserTicketServiceTest {
 
         assertEquals(2, responseDto.getCount());
         assertEquals(160, responseDto.getCost());
+    }
+
+    @Test
+    @DisplayName("sell user's lottery successfully and get ticket id")
+    void sellLottery() {
+        String userId = "1234567890";
+        String ticketId = "123456";
+
+        when(userTicketRepository.findByUserIdAndTicketId(userId, ticketId)).thenReturn(Optional.of(new UserTicket()));
+
+        LotteryResponseDto responseDto = userTicketService.sellLottery(userId, ticketId);
+
+        verify(userTicketRepository, times(1)).deleteByUserIdAndTicketId(userId, ticketId);
+        assertEquals(ticketId, responseDto.getTicket());
+    }
+
+    @Test
+    @DisplayName("sell user's lottery successfully and get ticket id")
+    void sellLotteryNotFound() {
+        String userId = "1234567890";
+        String ticketId = "123456";
+
+        when(userTicketRepository.findByUserIdAndTicketId(userId, ticketId)).thenReturn(Optional.empty());
+
+        assertThrows(UserTicketNotFoundException.class, () -> userTicketService.sellLottery(userId, ticketId));
     }
 }

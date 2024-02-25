@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.userticket;
 
+import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,14 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,5 +73,21 @@ class UserTicketControllerTest {
                 .andExpect(jsonPath("$.tickets[2]", is("123456")))
                 .andExpect(jsonPath("$.count", is(ticketList.size())))
                 .andExpect(jsonPath("$.cost", is(240)));
+    }
+
+    @Test
+    @DisplayName("when sell user's lottery on DELETE: /users/:userId/lotteries/:ticketId should return status 200 and body contain ticket")
+    void sellLottery() throws Exception {
+        String userId = "1234567890";
+        String ticketId = "123456";
+
+        when(userTicketService.sellLottery(userId, ticketId)).thenReturn(new LotteryResponseDto(ticketId));
+
+        mockMvc.perform(
+                        delete("/users/"+ userId + "/lotteries/" + ticketId)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ticket", is(ticketId)));
     }
 }
