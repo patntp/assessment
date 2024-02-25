@@ -1,6 +1,8 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
+import com.kbtg.bootcamp.posttest.exception.LotteryNotFoundException;
 import com.kbtg.bootcamp.posttest.exception.PriceConflictException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class LotteryService {
         this.lotteryRepository = lotteryRepository;
     }
 
+    @Transactional
     public LotteryResponseDto createLottery(LotteryRequestDto requestDto){
         Optional<Lottery> optionalLottery = lotteryRepository.findById(requestDto.getTicket());
         Lottery lottery;
@@ -46,5 +49,19 @@ public class LotteryService {
         LotteryListResponseDto responseDto = new LotteryListResponseDto(tickets);
 
         return responseDto;
+    }
+
+    public Optional<Lottery> getLottery(String ticketId){
+        return lotteryRepository.findById(ticketId);
+    }
+
+    public void updateLotteryAmount(String ticketId){
+        Lottery lottery = getLottery(ticketId).get();
+        if (lottery.getAmount() > 0) {
+            lottery.setAmount(lottery.getAmount() - 1);
+        } else {
+            throw new LotteryNotFoundException("Lottery with ticket id: " + ticketId + " is sold out.");
+        }
+        lotteryRepository.save(lottery);
     }
 }
