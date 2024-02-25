@@ -6,6 +6,8 @@ import com.kbtg.bootcamp.posttest.lottery.LotteryService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,5 +34,27 @@ public class UserTicketService {
         } else {
             throw new LotteryNotFoundException("There is no lottery with ticket id: " + ticketId);
         }
+    }
+
+    public ListUserLotteriesResponseDto listUserLotteries(String userId) {
+        List<UserTicket> userTicketList = userTicketRepository.findAllByUserId(userId);
+
+        List<String> ticketList = new ArrayList<>();
+        Integer cost = 0;
+        Integer count = 0;
+        for (UserTicket userTicket: userTicketList) {
+            String ticketId = userTicket.getTicketId();
+//            Integer ticketPrice = lotteryService.getLottery(ticketId).get().getPrice();
+            Optional<Lottery> optionalLottery = lotteryService.getLottery(ticketId);
+            Integer ticketPrice = 0;
+            if (optionalLottery.isPresent()) {
+                ticketPrice = optionalLottery.get().getPrice();
+            }
+            ticketList.add(ticketId);
+            cost = cost + ticketPrice;
+            count = count + 1;
+        }
+
+        return new ListUserLotteriesResponseDto(ticketList, count, cost);
     }
 }
