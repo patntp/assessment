@@ -10,9 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,5 +53,26 @@ class UserTicketControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)));
 
+    }
+
+    @Test
+    @DisplayName("when list user lotteries on GET: /users/:userId/lotteries should return status 200 and body contain tickets, count, and cost")
+    void listUserLotteries() throws Exception {
+        String userId = "1234567890";
+
+        List<String> ticketList = List.of("000001", "000002", "123456");
+        int count = ticketList.size();
+        int cost = 240;
+
+        ListUserLotteriesResponseDto responseDto = new ListUserLotteriesResponseDto(ticketList, count, cost);
+        when(userTicketService.listUserLotteries(userId)).thenReturn(new ListUserLotteriesResponseDto(ticketList, count, cost));
+
+        mockMvc.perform(get("/users/"+ userId + "/lotteries/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tickets[0]", is("000001")))
+                .andExpect(jsonPath("$.tickets[1]", is("000002")))
+                .andExpect(jsonPath("$.tickets[2]", is("123456")))
+                .andExpect(jsonPath("$.count", is(ticketList.size())))
+                .andExpect(jsonPath("$.cost", is(240)));
     }
 }

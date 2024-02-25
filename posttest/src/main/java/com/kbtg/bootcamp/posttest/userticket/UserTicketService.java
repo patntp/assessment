@@ -44,7 +44,12 @@ public class UserTicketService {
         Integer count = 0;
         for (UserTicket userTicket: userTicketList) {
             String ticketId = userTicket.getTicketId();
-            Integer ticketPrice = lotteryService.getLottery(ticketId).get().getPrice();
+//            Integer ticketPrice = lotteryService.getLottery(ticketId).get().getPrice();
+            Optional<Lottery> optionalLottery = lotteryService.getLottery(ticketId);
+            Integer ticketPrice = 0;
+            if (optionalLottery.isPresent()) {
+                ticketPrice = optionalLottery.get().getPrice();
+            }
             ticketList.add(ticketId);
             cost = cost + ticketPrice;
             count = count + 1;
