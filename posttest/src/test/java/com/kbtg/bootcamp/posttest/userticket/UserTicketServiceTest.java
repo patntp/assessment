@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.userticket;
 
+import com.kbtg.bootcamp.posttest.exception.LotteryNotFoundException;
 import com.kbtg.bootcamp.posttest.exception.UserTicketNotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
@@ -52,6 +53,17 @@ class UserTicketServiceTest {
     }
 
     @Test
+    @DisplayName("buy a lottery unsuccessfully and throw LotteryNotFoundException")
+    void buyLotteryNotFound() {
+        String userId = "1234567890";
+        String ticketId = "123456";
+
+        when(lotteryService.getLottery(ticketId)).thenReturn(Optional.empty());
+
+        assertThrows(LotteryNotFoundException.class, () -> userTicketService.buyLottery(userId, ticketId));
+    }
+
+    @Test
     @DisplayName("list user lotteries and get count and cost")
     void listUserLotteries() {
         String userId = "1234567890";
@@ -97,7 +109,7 @@ class UserTicketServiceTest {
     }
 
     @Test
-    @DisplayName("sell user's lottery successfully and get ticket id")
+    @DisplayName("sell user's lottery unsuccessfully and throw UserTicketNotFoundException")
     void sellLotteryNotFound() {
         String userId = "1234567890";
         String ticketId = "123456";
