@@ -38,7 +38,7 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("when create lottery on POST: /admin/lotteries should return status 201 and body contain ticket")
+    @DisplayName("when create lottery on POST: /admin/lotteries should return status 201 and body contain transaction id")
     void createLottery() throws Exception {
         Lottery lottery = new Lottery();
         lottery.setTicket("123456");
