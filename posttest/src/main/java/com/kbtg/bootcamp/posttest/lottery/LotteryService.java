@@ -3,7 +3,9 @@ package com.kbtg.bootcamp.posttest.lottery;
 import com.kbtg.bootcamp.posttest.exception.PriceConflictException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LotteryService {
@@ -32,5 +34,17 @@ public class LotteryService {
 
         lotteryRepository.save(lottery);
         return new LotteryResponseDto(lottery.getTicket());
+    }
+
+    public LotteryListResponseDto getLotteryList() {
+        List<Lottery> lotteries = lotteryRepository.findAll();
+
+        List<String> tickets = lotteries.stream()
+                .map(Lottery::getTicket)
+                .collect(Collectors.toList());
+
+        LotteryListResponseDto responseDto = new LotteryListResponseDto(tickets);
+
+        return responseDto;
     }
 }

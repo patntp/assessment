@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,5 +61,32 @@ class LotteryServiceTest {
         requestDto.setAmount(1);
 
         assertThrows(PriceConflictException.class, () -> lotteryService.createLottery(requestDto));
+    }
+
+    @Test
+    @DisplayName("get lottery list should get three tickets")
+    void getLotteryList() {
+        Lottery lottery = new Lottery();
+        lottery.setTicket("000001");
+        lottery.setPrice(81);
+        lottery.setAmount(2);
+
+        Lottery lottery2 = new Lottery();
+        lottery2.setTicket("000002");
+        lottery2.setPrice(85);
+        lottery2.setAmount(3);
+
+        Lottery lottery3 = new Lottery();
+        lottery3.setTicket("123456");
+        lottery3.setPrice(80);
+        lottery3.setAmount(1);
+
+        List<Lottery> lotteryList = List.of(lottery, lottery2, lottery3);
+        
+        when(lotteryRepository.findAll()).thenReturn(lotteryList);
+
+        LotteryListResponseDto responseDto = lotteryService.getLotteryList();
+
+        assertEquals(List.of("000001", "000002", "123456"), responseDto.getTickets());
     }
 }
