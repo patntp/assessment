@@ -1,7 +1,9 @@
 package com.kbtg.bootcamp.posttest.userticket;
 
 import com.kbtg.bootcamp.posttest.exception.LotteryNotFoundException;
+import com.kbtg.bootcamp.posttest.exception.UserTicketNotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
+import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
 import com.kbtg.bootcamp.posttest.lottery.LotteryService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,6 @@ public class UserTicketService {
         Integer count = 0;
         for (UserTicket userTicket: userTicketList) {
             String ticketId = userTicket.getTicketId();
-//            Integer ticketPrice = lotteryService.getLottery(ticketId).get().getPrice();
             Optional<Lottery> optionalLottery = lotteryService.getLottery(ticketId);
             Integer ticketPrice = 0;
             if (optionalLottery.isPresent()) {
@@ -56,5 +57,16 @@ public class UserTicketService {
         }
 
         return new ListUserLotteriesResponseDto(ticketList, count, cost);
+    }
+
+    @Transactional
+    public LotteryResponseDto sellLottery(String userId, String ticketId) {
+        Optional<UserTicket> optionalUserTicket = userTicketRepository.findByUserIdAndTicketId(userId, ticketId);
+        if (optionalUserTicket.isEmpty()) {
+            throw new UserTicketNotFoundException("User ticket not found for userId: " + userId + ", ticketId: " + ticketId);
+        }
+
+        userTicketRepository.deleteByUserIdAndTicketId(userId, ticketId);
+        return new LotteryResponseDto(ticketId);
     }
 }

@@ -25,4 +25,12 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({ UserTicketNotFoundException.class })
+    public ResponseEntity<Object> handleUserTicketNotFoundException(UserTicketNotFoundException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), HttpStatus.NOT_FOUND, ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }

@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.userticket;
 
+import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,11 @@ public class UserTicketController {
     @GetMapping("/{userId}/lotteries")
     public ResponseEntity<ListUserLotteriesResponseDto> listUserLotteries(@PathVariable @Size(min = 10, max = 10) String userId) {
         return new ResponseEntity<>(userTicketService.listUserLotteries(userId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}/lotteries/{ticketId}")
+    public ResponseEntity<LotteryResponseDto> sellLottery(@PathVariable @Size(min = 10, max = 10) String userId, @PathVariable @Size(min = 6, max = 6) String ticketId) {
+        return new ResponseEntity<>(userTicketService.sellLottery(userId, ticketId), HttpStatus.OK);
     }
 
 
