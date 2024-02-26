@@ -1,6 +1,19 @@
 version: '3'
 
+networks:
+  posttest:
+
 services:
+  lottery-app:
+    build: .
+    ports:
+      - "8888:8888"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/lottery-system
+    depends_on:
+      - postgres
+    networks:
+      - posttest
   postgres:
     image: postgres:latest
     environment:
@@ -11,3 +24,5 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+      - posttest
