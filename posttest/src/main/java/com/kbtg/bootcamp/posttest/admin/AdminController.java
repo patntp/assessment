@@ -1,6 +1,5 @@
 package com.kbtg.bootcamp.posttest.admin;
 
-import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRequestDto;
 import com.kbtg.bootcamp.posttest.lottery.LotteryResponseDto;
 import com.kbtg.bootcamp.posttest.lottery.LotteryService;
